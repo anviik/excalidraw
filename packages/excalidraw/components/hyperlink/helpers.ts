@@ -79,7 +79,6 @@ export const isPointHittingLinkIcon = (
   return hitLink;
 };
 
-
 // if  user’s pointer is at (x, y), should we treat that as clicking a link on this element?
 //true means: yes the pointer is hitting a link for this element”
 // false means no don’t treat this as a link click
@@ -91,7 +90,6 @@ export const isPointHittingLink = (
   [x, y]: GlobalPoint,
   isMobile: boolean,
 ) => {
-  
   if (
     !element.link ||
     (appState.selectedElementIds[element.id] &&
@@ -103,7 +101,6 @@ export const isPointHittingLink = (
   const allowFullElementHit =
     appState.viewModeEnabled || appState.activeTool.type === "laser";
 
-  
   if (
     !isMobile &&
     allowFullElementHit &&

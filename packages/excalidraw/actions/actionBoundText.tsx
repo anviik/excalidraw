@@ -171,8 +171,6 @@ export const actionBindText = register({
     // overwritting the cache with original container height so
     // it can be restored when unbind
     updateOriginalContainerCache(container.id, originalContainerHeight);
-    console.log("textElement",textElement)
-    console.log(container)
     return {
       elements: pushTextAboveContainer(elements, container, textElement),
       appState: { ...appState, selectedElementIds: { [container.id]: true } },

@@ -7442,7 +7442,6 @@ class App extends React.Component<AppProps, AppState> {
       this.hitLinkElement &&
       (!this.state.selectedElementIds[this.hitLinkElement.id] ||
         this.state.activeTool.type === "laser")
-        
     ) {
       if (
         clicklength < 300 &&
