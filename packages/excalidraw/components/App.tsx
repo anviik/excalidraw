@@ -6160,6 +6160,9 @@ class App extends React.Component<AppProps, AppState> {
       let url = this.hitLinkElement.link;
       if (url) {
         url = normalizeLink(url);
+        if (isLocalLink(url)) {
+          return;
+        }
         let customEvent;
         if (this.props.onLinkOpen) {
           customEvent = wrapEvent(EVENT.EXCALIDRAW_LINK, event.nativeEvent);
@@ -7421,10 +7424,25 @@ class App extends React.Component<AppProps, AppState> {
         hitElement,
       );
     }
+    if (!this.hitLinkElement && this.state.activeTool.type === "laser") {
+      const hitElement = this.getElementAtPosition(
+        scenePointer.x,
+        scenePointer.y,
+        {
+          includeLockedElements: true,
+        },
+      );
+      this.hitLinkElement = this.getElementLinkAtPosition(
+        scenePointer,
+        hitElement,
+      );
+    }
 
     if (
       this.hitLinkElement &&
-      !this.state.selectedElementIds[this.hitLinkElement.id]
+      (!this.state.selectedElementIds[this.hitLinkElement.id] ||
+        this.state.activeTool.type === "laser")
+        
     ) {
       if (
         clicklength < 300 &&
