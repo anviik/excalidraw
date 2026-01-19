@@ -6587,6 +6587,26 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     const hasDeselectedButton = Boolean(event.buttons);
+    if (this.state.activeTool.type === "laser") {
+      if (!isOverScrollBar && !hasDeselectedButton) {
+        const hitElementMightBeLocked = this.getElementAtPosition(
+          scenePointerX,
+          scenePointerY,
+          {
+            preferSelected: true,
+            includeLockedElements: true,
+          },
+        );
+        this.hitLinkElement = this.getElementLinkAtPosition(
+          scenePointer,
+          hitElementMightBeLocked,
+        );
+        if (this.hitLinkElement) {
+          setCursor(this.interactiveCanvas, CURSOR_TYPE.POINTER);
+        }
+      }
+      return;
+    }
     if (
       hasDeselectedButton ||
       (this.state.activeTool.type !== "selection" &&
