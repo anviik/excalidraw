@@ -8,6 +8,7 @@ import {
   getFontString,
   isProdEnv,
   invariant,
+  ROUNDNESS,
 } from "@excalidraw/common";
 
 import { pointFrom, pointRotateRads, type Radians } from "@excalidraw/math";
@@ -30,6 +31,8 @@ import {
   isTextElement,
 } from "./typeChecks";
 
+import { getCornerRadius } from "./utils"
+
 import type { Scene } from "./Scene";
 
 import type { MaybeTransformHandleType } from "./transformHandles";
@@ -42,6 +45,7 @@ import type {
   ExcalidrawTextElementWithContainer,
   NonDeletedExcalidrawElement,
 } from "./types";
+import { debugDrawBounds } from "./visualdebug";
 
 export const redrawTextBoundingBox = (
   textElement: ExcalidrawTextElement,
@@ -366,6 +370,19 @@ export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
     offsetX += container.width / 4;
     offsetY += container.height / 4;
   }
+  if (
+    container.type === "rectangle" &&
+    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
+  ) {
+    const radius = getCornerRadius(
+      Math.min(container.width, container.height),
+      container,
+    );
+    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
+    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2); // is half radius more ideal?
+    offsetX = padding;
+    offsetY = padding;
+  }
   return {
     x: container.x + offsetX,
     y: container.y + offsetY,
@@ -484,6 +501,38 @@ export const getBoundTextMaxWidth = (
     // Math.round(width / 2) - https://github.com/excalidraw/excalidraw/pull/6265
     return Math.round(width / 2) - BOUND_TEXT_PADDING * 2;
   }
+  if (
+    container.type === "rectangle" &&
+    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
+  ) {
+    // console.log("rectangle container:", container);
+    const radius = getCornerRadius(
+      Math.min(container.width, container.height),
+      container,
+    );
+    debugDrawBounds(
+      [
+        container.x + BOUND_TEXT_PADDING,
+        container.y + BOUND_TEXT_PADDING,
+        container.x + width - BOUND_TEXT_PADDING,
+        container.y + container.height - BOUND_TEXT_PADDING,
+      ],
+      { color: "blue" },
+    );
+    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
+    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2); // is half radius more ideal?
+    // console.log("padding for adaptive radius:", padding);
+    debugDrawBounds(
+      [
+        container.x + padding,
+        container.y + padding,
+        container.x + width - padding,
+        container.y + container.height - padding,
+      ],
+      { color: "red" },
+    );
+    return width - padding * 2;
+  }
   return width - BOUND_TEXT_PADDING * 2;
 };
 
@@ -509,6 +558,19 @@ export const getBoundTextMaxHeight = (
     // The height of the largest rectangle inscribed inside a rhombus is
     // Math.round(height / 2) - https://github.com/excalidraw/excalidraw/pull/6265
     return Math.round(height / 2) - BOUND_TEXT_PADDING * 2;
+  }
+  if (
+    container.type === "rectangle" &&
+    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
+  ) {
+    // console.log("rectangle container:", container);
+    const radius = getCornerRadius(
+      Math.min(container.width, container.height),
+      container,
+    );
+    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
+    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2);
+    return height - padding * 2;
   }
   return height - BOUND_TEXT_PADDING * 2;
 };
