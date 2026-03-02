@@ -79,6 +79,10 @@ type _ExcalidrawElementBase = Readonly<{
   link: string | null;
   locked: boolean;
   customData?: Record<string, any>;
+  /** Optional per-side padding for bound text inside a container.
+   *  When set, overrides the computed padding from shape/roundness.
+   *  Absent on legacy drawings — computed padding is used as fallback. */
+  containerPadding?: { x: number; y: number };
 }>;
 
 export type ExcalidrawSelectionElement = _ExcalidrawElementBase & {

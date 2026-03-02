@@ -31,7 +31,7 @@ import {
   isTextElement,
 } from "./typeChecks";
 
-import { getCornerRadius } from "./utils"
+import { getCornerRadius } from "./utils";
 
 import type { Scene } from "./Scene";
 
@@ -45,7 +45,6 @@ import type {
   ExcalidrawTextElementWithContainer,
   NonDeletedExcalidrawElement,
 } from "./types";
-import { debugDrawBounds } from "./visualdebug";
 
 export const redrawTextBoundingBox = (
   textElement: ExcalidrawTextElement,
@@ -112,6 +111,7 @@ export const redrawTextBoundingBox = (
       const nextHeight = computeContainerDimensionForBoundText(
         metrics.height,
         container.type,
+        container,
       );
       scene.mutateElement(container, { height: nextHeight });
       updateOriginalContainerCache(container.id, nextHeight);
@@ -121,6 +121,7 @@ export const redrawTextBoundingBox = (
       const nextWidth = computeContainerDimensionForBoundText(
         metrics.width,
         container.type,
+        container,
       );
       scene.mutateElement(container, { width: nextWidth });
     }
@@ -191,6 +192,7 @@ export const handleBindTextResize = (
       containerHeight = computeContainerDimensionForBoundText(
         nextHeight,
         container.type,
+        container,
       );
 
       const diff = containerHeight - container.height;
@@ -356,19 +358,28 @@ export const getContainerCenter = (
   return { x: midSegmentMidpoint[0], y: midSegmentMidpoint[1] };
 };
 
-export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
-  let offsetX = BOUND_TEXT_PADDING;
-  let offsetY = BOUND_TEXT_PADDING;
+/**
+ * Returns the per-side padding between a container's edge and its bound text.
+ * Uses the explicit `containerPadding` property when present, otherwise
+ * computes padding from the container shape and roundness.
+ */
+export const getContainerBoundTextPadding = (
+  container: ExcalidrawElement,
+  axis: "x" | "y" = "x",
+) => {
+  if (container.containerPadding) {
+    return container.containerPadding[axis];
+  }
+
+  const dim = axis === "x" ? container.width : container.height;
 
   if (container.type === "ellipse") {
-    // The derivation of coordinates is explained in https://github.com/excalidraw/excalidraw/pull/6172
-    offsetX += (container.width / 2) * (1 - Math.sqrt(2) / 2);
-    offsetY += (container.height / 2) * (1 - Math.sqrt(2) / 2);
+    // https://github.com/excalidraw/excalidraw/pull/6172
+    return BOUND_TEXT_PADDING + (dim / 2) * (1 - Math.sqrt(2) / 2);
   }
-  // The derivation of coordinates is explained in https://github.com/excalidraw/excalidraw/pull/6265
   if (container.type === "diamond") {
-    offsetX += container.width / 4;
-    offsetY += container.height / 4;
+    // https://github.com/excalidraw/excalidraw/pull/6265
+    return BOUND_TEXT_PADDING + dim / 4;
   }
   if (
     container.type === "rectangle" &&
@@ -378,11 +389,15 @@ export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
       Math.min(container.width, container.height),
       container,
     );
-    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
-    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2); // is half radius more ideal?
-    offsetX = padding;
-    offsetY = padding;
+    return Math.max(BOUND_TEXT_PADDING, radius / 2);
   }
+  return BOUND_TEXT_PADDING;
+};
+
+export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
+  const offsetX = getContainerBoundTextPadding(container, "x");
+  const offsetY = getContainerBoundTextPadding(container, "y");
+
   return {
     x: container.x + offsetX,
     y: container.y + offsetY,
@@ -463,19 +478,27 @@ export const isValidTextContainer = (element: {
 export const computeContainerDimensionForBoundText = (
   dimension: number,
   containerType: ExtractSetType<typeof VALID_CONTAINER_TYPES>,
+  container?: ExcalidrawElement,
 ) => {
   dimension = Math.ceil(dimension);
-  const padding = BOUND_TEXT_PADDING * 2;
 
   if (containerType === "ellipse") {
+    const padding = BOUND_TEXT_PADDING * 2;
     return Math.round(((dimension + padding) / Math.sqrt(2)) * 2);
   }
   if (containerType === "arrow") {
+    const padding = BOUND_TEXT_PADDING * 2;
     return dimension + padding * 8;
   }
   if (containerType === "diamond") {
+    const padding = BOUND_TEXT_PADDING * 2;
     return 2 * (dimension + padding);
   }
+
+  // rectangle — use adaptive-radius-aware padding when container is available
+  const padding = container
+    ? getContainerBoundTextPadding(container) * 2
+    : BOUND_TEXT_PADDING * 2;
   return dimension + padding;
 };
 
@@ -501,39 +524,7 @@ export const getBoundTextMaxWidth = (
     // Math.round(width / 2) - https://github.com/excalidraw/excalidraw/pull/6265
     return Math.round(width / 2) - BOUND_TEXT_PADDING * 2;
   }
-  if (
-    container.type === "rectangle" &&
-    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
-  ) {
-    // console.log("rectangle container:", container);
-    const radius = getCornerRadius(
-      Math.min(container.width, container.height),
-      container,
-    );
-    debugDrawBounds(
-      [
-        container.x + BOUND_TEXT_PADDING,
-        container.y + BOUND_TEXT_PADDING,
-        container.x + width - BOUND_TEXT_PADDING,
-        container.y + container.height - BOUND_TEXT_PADDING,
-      ],
-      { color: "blue" },
-    );
-    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
-    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2); // is half radius more ideal?
-    // console.log("padding for adaptive radius:", padding);
-    debugDrawBounds(
-      [
-        container.x + padding,
-        container.y + padding,
-        container.x + width - padding,
-        container.y + container.height - padding,
-      ],
-      { color: "red" },
-    );
-    return width - padding * 2;
-  }
-  return width - BOUND_TEXT_PADDING * 2;
+  return width - getContainerBoundTextPadding(container, "x") * 2;
 };
 
 export const getBoundTextMaxHeight = (
@@ -559,20 +550,7 @@ export const getBoundTextMaxHeight = (
     // Math.round(height / 2) - https://github.com/excalidraw/excalidraw/pull/6265
     return Math.round(height / 2) - BOUND_TEXT_PADDING * 2;
   }
-  if (
-    container.type === "rectangle" &&
-    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
-  ) {
-    // console.log("rectangle container:", container);
-    const radius = getCornerRadius(
-      Math.min(container.width, container.height),
-      container,
-    );
-    // const padding = Math.max(BOUND_TEXT_PADDING, radius);
-    const padding = Math.max(BOUND_TEXT_PADDING, radius / 2);
-    return height - padding * 2;
-  }
-  return height - BOUND_TEXT_PADDING * 2;
+  return height - getContainerBoundTextPadding(container, "y") * 2;
 };
 
 /** retrieves text from text elements and concatenates to a single string */

@@ -219,6 +219,7 @@ export class API {
       : never;
     elbowed?: boolean;
     fixedSegments?: FixedSegment[] | null;
+    containerPadding?: ExcalidrawGenericElement["containerPadding"];
   }): T extends "arrow" | "line"
     ? ExcalidrawLinearElement
     : T extends "freedraw"
@@ -276,6 +277,7 @@ export class API {
       opacity: rest.opacity ?? appState.currentItemOpacity,
       boundElements: rest.boundElements ?? null,
       locked: rest.locked ?? false,
+      containerPadding: rest.containerPadding,
     };
     switch (type) {
       case "rectangle":

@@ -263,6 +263,8 @@ export const actionWrapTextInContainer = register({
           locked: false,
           x: textElement.x - BOUND_TEXT_PADDING,
           y: textElement.y - BOUND_TEXT_PADDING,
+          // Use base padding here; redrawTextBoundingBox below will
+          // recompute the correct dimension with adaptive-radius awareness
           width: computeContainerDimensionForBoundText(
             textElement.width,
             "rectangle",

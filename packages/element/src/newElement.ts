@@ -73,6 +73,7 @@ export type ElementConstructorOpts = MarkOptional<
   | "locked"
   | "opacity"
   | "customData"
+  | "containerPadding"
 >;
 
 const _newElementBase = <T extends ExcalidrawElement>(
@@ -151,6 +152,7 @@ const _newElementBase = <T extends ExcalidrawElement>(
     link,
     locked,
     customData: rest.customData,
+    containerPadding: rest.containerPadding,
   };
   return element;
 };

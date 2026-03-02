@@ -243,8 +243,9 @@ const repairBinding = <T extends ExcalidrawArrowElement>(
 };
 
 const restoreElementWithProperties = <
-  T extends Required<Omit<ExcalidrawElement, "customData">> & {
+  T extends Required<Omit<ExcalidrawElement, "customData" | "containerPadding">> & {
     customData?: ExcalidrawElement["customData"];
+    containerPadding?: ExcalidrawElement["containerPadding"];
     /** @deprecated */
     boundElementIds?: readonly ExcalidrawElement["id"][];
     /** @deprecated */
@@ -309,6 +310,10 @@ const restoreElementWithProperties = <
   if ("customData" in element || "customData" in extra) {
     base.customData =
       "customData" in extra ? extra.customData : element.customData;
+  }
+
+  if ("containerPadding" in element) {
+    (base as any).containerPadding = element.containerPadding;
   }
 
   const ret = {

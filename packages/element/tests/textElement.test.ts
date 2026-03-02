@@ -1,10 +1,16 @@
 import { getLineHeight } from "@excalidraw/common";
 import { API } from "@excalidraw/excalidraw/tests/helpers/api";
 
-import { FONT_FAMILY, TEXT_ALIGN, VERTICAL_ALIGN } from "@excalidraw/common";
+import {
+  FONT_FAMILY,
+  ROUNDNESS,
+  TEXT_ALIGN,
+  VERTICAL_ALIGN,
+} from "@excalidraw/common";
 
 import {
   computeContainerDimensionForBoundText,
+  getContainerBoundTextPadding,
   getContainerCoords,
   getBoundTextMaxWidth,
   getBoundTextMaxHeight,
@@ -40,6 +46,20 @@ describe("Test measureText", () => {
       });
     });
 
+    it("should compute coords correctly when rectangle with adaptive radius", () => {
+      const element = API.createElement({
+        type: "rectangle",
+        ...params,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      // min(200, 100) = 100, which is <= 128 cutoff so radius = 100 * 0.25 = 25
+      // padding = max(5, 25 / 2) = 12.5
+      expect(getContainerCoords(element)).toEqual({
+        x: 22.5,
+        y: 32.5,
+      });
+    });
+
     it("should compute coords correctly when diamond", () => {
       const element = API.createElement({
         type: "diamond",
@@ -48,6 +68,32 @@ describe("Test measureText", () => {
       expect(getContainerCoords(element)).toEqual({
         x: 65,
         y: 50,
+      });
+    });
+
+    it("should use explicit containerPadding when set", () => {
+      const element = API.createElement({
+        type: "rectangle",
+        ...params,
+        containerPadding: { x: 20, y: 10 },
+      });
+      expect(getContainerCoords(element)).toEqual({
+        x: 30, // 10 + 20
+        y: 30, // 20 + 10
+      });
+    });
+
+    it("should use explicit containerPadding over adaptive radius", () => {
+      const element = API.createElement({
+        type: "rectangle",
+        ...params,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+        containerPadding: { x: 3, y: 7 },
+      });
+      // containerPadding takes precedence over computed adaptive-radius padding
+      expect(getContainerCoords(element)).toEqual({
+        x: 13, // 10 + 3
+        y: 27, // 20 + 7
       });
     });
   });
@@ -87,6 +133,24 @@ describe("Test measureText", () => {
         320,
       );
     });
+
+    it("should compute container dimension for rectangle with adaptive radius", () => {
+      const element = API.createElement({
+        type: "rectangle",
+        ...params,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      // Default adaptive radius = 32, half = 16, so padding = max(5, 16) * 2 = 32
+      expect(
+        computeContainerDimensionForBoundText(150, element.type, element),
+      ).toEqual(182); // ceil(150) + 32
+    });
+
+    it("should fall back to base padding for rectangle without container arg", () => {
+      expect(computeContainerDimensionForBoundText(150, "rectangle")).toEqual(
+        160,
+      );
+    });
   });
 
   describe("Test getBoundTextMaxWidth", () => {
@@ -108,6 +172,27 @@ describe("Test measureText", () => {
     it("should return max width when container is diamond", () => {
       const container = API.createElement({ type: "diamond", ...params });
       expect(getBoundTextMaxWidth(container, null)).toBe(79);
+    });
+
+    it("should return max width when container is rectangle with adaptive radius", () => {
+      const container = API.createElement({
+        type: "rectangle",
+        ...params,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      // min(178, 194) = 178 > 128 cutoff, so radius = 32, half = 16
+      // padding = max(5, 16) = 16, width - 16 * 2 = 178 - 32 = 146
+      expect(getBoundTextMaxWidth(container, null)).toBe(146);
+    });
+
+    it("should use containerPadding when set on rectangle", () => {
+      const container = API.createElement({
+        type: "rectangle",
+        ...params,
+        containerPadding: { x: 20, y: 15 },
+      });
+      // width - containerPadding.x * 2 = 178 - 40 = 138
+      expect(getBoundTextMaxWidth(container, null)).toBe(138);
     });
   });
 
@@ -146,6 +231,27 @@ describe("Test measureText", () => {
     it("should return max height when container is diamond", () => {
       const container = API.createElement({ type: "diamond", ...params });
       expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(87);
+    });
+
+    it("should return max height when container is rectangle with adaptive radius", () => {
+      const container = API.createElement({
+        type: "rectangle",
+        ...params,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      // min(178, 194) = 178 > 128 cutoff, so radius = 32, half = 16
+      // padding = max(5, 16) = 16, height - 16 * 2 = 194 - 32 = 162
+      expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(162);
+    });
+
+    it("should use containerPadding when set on rectangle", () => {
+      const container = API.createElement({
+        type: "rectangle",
+        ...params,
+        containerPadding: { x: 20, y: 15 },
+      });
+      // height - containerPadding.y * 2 = 194 - 30 = 164
+      expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(164);
     });
 
     it("should return max height when container is arrow", () => {
