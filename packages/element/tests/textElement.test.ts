@@ -10,6 +10,7 @@ import {
 
 import {
   computeContainerDimensionForBoundText,
+  computeContainerPadding,
   getContainerBoundTextPadding,
   getContainerCoords,
   getBoundTextMaxWidth,
@@ -52,11 +53,10 @@ describe("Test measureText", () => {
         ...params,
         roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
       });
-      // min(200, 100) = 100, which is <= 128 cutoff so radius = 100 * 0.25 = 25
-      // padding = max(5, 25 / 2) = 12.5
+      // No containerPadding set → falls back to BOUND_TEXT_PADDING = 5 (legacy path)
       expect(getContainerCoords(element)).toEqual({
-        x: 22.5,
-        y: 32.5,
+        x: 15,
+        y: 25,
       });
     });
 
@@ -140,10 +140,10 @@ describe("Test measureText", () => {
         ...params,
         roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
       });
-      // Default adaptive radius = 32, half = 16, so padding = max(5, 16) * 2 = 32
+      // No containerPadding set → falls back to BOUND_TEXT_PADDING * 2 = 10 (legacy path)
       expect(
         computeContainerDimensionForBoundText(150, element.type, element),
-      ).toEqual(182); // ceil(150) + 32
+      ).toEqual(160); // ceil(150) + 10
     });
 
     it("should fall back to base padding for rectangle without container arg", () => {
@@ -180,9 +180,9 @@ describe("Test measureText", () => {
         ...params,
         roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
       });
-      // min(178, 194) = 178 > 128 cutoff, so radius = 32, half = 16
-      // padding = max(5, 16) = 16, width - 16 * 2 = 178 - 32 = 146
-      expect(getBoundTextMaxWidth(container, null)).toBe(146);
+      // No containerPadding set → falls back to BOUND_TEXT_PADDING = 5 (legacy path)
+      // width - 5 * 2 = 178 - 10 = 168
+      expect(getBoundTextMaxWidth(container, null)).toBe(168);
     });
 
     it("should use containerPadding when set on rectangle", () => {
@@ -239,9 +239,9 @@ describe("Test measureText", () => {
         ...params,
         roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
       });
-      // min(178, 194) = 178 > 128 cutoff, so radius = 32, half = 16
-      // padding = max(5, 16) = 16, height - 16 * 2 = 194 - 32 = 162
-      expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(162);
+      // No containerPadding set → falls back to BOUND_TEXT_PADDING = 5 (legacy path)
+      // height - 5 * 2 = 194 - 10 = 184
+      expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(184);
     });
 
     it("should use containerPadding when set on rectangle", () => {
@@ -273,6 +273,45 @@ describe("Test measureText", () => {
       expect(getBoundTextMaxHeight(container, boundTextElement)).toBe(
         boundTextElement.height,
       );
+    });
+  });
+
+  describe("Test computeContainerPadding", () => {
+    it("should return 10x10 for a sharp rectangle", () => {
+      const el = API.createElement({ type: "rectangle", width: 200, height: 100 });
+      expect(computeContainerPadding(el)).toEqual({ x: 10, y: 10 });
+    });
+
+    it("should return radius-based padding for adaptive-radius rectangle (small)", () => {
+      // 100x100: min=100 <= 128 cutoff → radius = 100 * 0.25 = 25, half=12.5 < 10 → max(10,12.5)=12.5
+      const el = API.createElement({
+        type: "rectangle",
+        width: 100,
+        height: 100,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      expect(computeContainerPadding(el)).toEqual({ x: 12.5, y: 12.5 });
+    });
+
+    it("should return radius-based padding for adaptive-radius rectangle (large)", () => {
+      // 200x200: min=200 > 128 cutoff → radius = 32, half=16 > 10 → max(10,16)=16
+      const el = API.createElement({
+        type: "rectangle",
+        width: 200,
+        height: 200,
+        roundness: { type: ROUNDNESS.ADAPTIVE_RADIUS },
+      });
+      expect(computeContainerPadding(el)).toEqual({ x: 16, y: 16 });
+    });
+
+    it("should return undefined for ellipse", () => {
+      const el = API.createElement({ type: "ellipse", width: 200, height: 100 });
+      expect(computeContainerPadding(el)).toBeUndefined();
+    });
+
+    it("should return undefined for diamond", () => {
+      const el = API.createElement({ type: "diamond", width: 200, height: 100 });
+      expect(computeContainerPadding(el)).toBeUndefined();
     });
   });
 });

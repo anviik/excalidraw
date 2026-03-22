@@ -38,6 +38,7 @@ import { LinearElementEditor } from "@excalidraw/element";
 import { newElementWith } from "@excalidraw/element";
 
 import {
+  computeContainerPadding,
   getBoundTextElement,
   redrawTextBoundingBox,
 } from "@excalidraw/element";
@@ -1473,24 +1474,56 @@ export const actionChangeRoundness = register<"sharp" | "round">({
   name: "changeRoundness",
   label: "Change edge roundness",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(elements, appState, (el) => {
-        if (isElbowArrow(el)) {
-          return el;
-        }
+  perform: (elements, appState, value, app) => {
+    const updatedElements = changeProperty(elements, appState, (el) => {
+      if (isElbowArrow(el)) {
+        return el;
+      }
 
-        return newElementWith(el, {
-          roundness:
-            value === "round"
-              ? {
-                  type: isUsingAdaptiveRadius(el.type)
-                    ? ROUNDNESS.ADAPTIVE_RADIUS
-                    : ROUNDNESS.PROPORTIONAL_RADIUS,
-                }
-              : null,
+      const newRoundness =
+        value === "round"
+          ? {
+              type: isUsingAdaptiveRadius(el.type)
+                ? ROUNDNESS.ADAPTIVE_RADIUS
+                : ROUNDNESS.PROPORTIONAL_RADIUS,
+            }
+          : null;
+
+      const elWithRoundness = newElementWith(el, {
+        roundness: newRoundness,
+      });
+
+      // Stamp containerPadding for text containers so text reflows correctly
+      const boundText = getBoundTextElement(
+        el,
+        app.scene.getNonDeletedElementsMap(),
+      );
+      if (boundText) {
+        const newContainerPadding = computeContainerPadding({
+          ...elWithRoundness,
+          roundness: newRoundness,
         });
-      }),
+        return newElementWith(elWithRoundness, {
+          containerPadding: newContainerPadding,
+        });
+      }
+
+      return elWithRoundness;
+    });
+
+    // Reflow bound text for all updated text containers
+    for (const el of updatedElements) {
+      const boundText = getBoundTextElement(
+        el,
+        app.scene.getNonDeletedElementsMap(),
+      );
+      if (boundText) {
+        redrawTextBoundingBox(boundText, el, app.scene);
+      }
+    }
+
+    return {
+      elements: updatedElements,
       appState: {
         ...appState,
         currentItemRoundness: value,

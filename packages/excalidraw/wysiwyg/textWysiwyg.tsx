@@ -31,6 +31,7 @@ import {
   computeContainerDimensionForBoundText,
   computeBoundTextPosition,
   getBoundTextElement,
+  computeContainerPadding,
 } from "@excalidraw/element";
 import { getTextWidth } from "@excalidraw/element";
 import { normalizeText } from "@excalidraw/element";
@@ -635,6 +636,14 @@ export const textWysiwyg = ({
               ),
           ),
         });
+      }
+
+      // Migrate legacy containers (no containerPadding) to new padding on first edit
+      if (!container.containerPadding) {
+        const padding = computeContainerPadding(container);
+        if (padding) {
+          app.scene.mutateElement(container, { containerPadding: padding });
+        }
       }
 
       redrawTextBoundingBox(updateElement, container, app.scene);

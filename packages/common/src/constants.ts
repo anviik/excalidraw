@@ -354,6 +354,8 @@ export const VERSIONS = {
 } as const;
 
 export const BOUND_TEXT_PADDING = 5;
+/** Increased base padding for new rectangle text containers (padding per side). */
+export const BOUND_TEXT_PADDING_RECTANGLE = 10;
 export const ARROW_LABEL_WIDTH_FRACTION = 0.7;
 export const ARROW_LABEL_FONT_SIZE_TO_MIN_WIDTH_RATIO = 11;
 

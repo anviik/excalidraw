@@ -16,6 +16,7 @@ import {
 import {
   computeBoundTextPosition,
   computeContainerDimensionForBoundText,
+  computeContainerPadding,
   getBoundTextElement,
   redrawTextBoundingBox,
 } from "@excalidraw/element";
@@ -238,6 +239,23 @@ export const actionWrapTextInContainer = register({
 
     for (const textElement of selectedElements) {
       if (isTextElement(textElement) && !isBoundToContainer(textElement)) {
+        const roundness =
+          appState.currentItemRoundness === "round"
+            ? {
+                type: isUsingAdaptiveRadius("rectangle")
+                  ? ROUNDNESS.ADAPTIVE_RADIUS
+                  : ROUNDNESS.PROPORTIONAL_RADIUS,
+              }
+            : null;
+        // Compute padding for the new container so we can use it for positioning
+        const containerPadding = computeContainerPadding({
+          type: "rectangle",
+          width: textElement.width,
+          height: textElement.height,
+          roundness,
+        } as Parameters<typeof computeContainerPadding>[0]);
+        const paddingX = containerPadding?.x ?? BOUND_TEXT_PADDING;
+        const paddingY = containerPadding?.y ?? BOUND_TEXT_PADDING;
         const container = newElement({
           type: "rectangle",
           backgroundColor: appState.currentItemBackgroundColor,
@@ -251,20 +269,12 @@ export const actionWrapTextInContainer = register({
           roughness: appState.currentItemRoughness,
           strokeWidth: appState.currentItemStrokeWidth,
           strokeStyle: appState.currentItemStrokeStyle,
-          roundness:
-            appState.currentItemRoundness === "round"
-              ? {
-                  type: isUsingAdaptiveRadius("rectangle")
-                    ? ROUNDNESS.ADAPTIVE_RADIUS
-                    : ROUNDNESS.PROPORTIONAL_RADIUS,
-                }
-              : null,
+          roundness,
           opacity: 100,
           locked: false,
-          x: textElement.x - BOUND_TEXT_PADDING,
-          y: textElement.y - BOUND_TEXT_PADDING,
-          // Use base padding here; redrawTextBoundingBox below will
-          // recompute the correct dimension with adaptive-radius awareness
+          containerPadding,
+          x: textElement.x - paddingX,
+          y: textElement.y - paddingY,
           width: computeContainerDimensionForBoundText(
             textElement.width,
             "rectangle",

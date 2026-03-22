@@ -2,6 +2,7 @@ import {
   ARROW_LABEL_FONT_SIZE_TO_MIN_WIDTH_RATIO,
   ARROW_LABEL_WIDTH_FRACTION,
   BOUND_TEXT_PADDING,
+  BOUND_TEXT_PADDING_RECTANGLE,
   DEFAULT_FONT_SIZE,
   TEXT_ALIGN,
   VERTICAL_ALIGN,
@@ -359,6 +360,28 @@ export const getContainerCenter = (
 };
 
 /**
+ * Computes the `containerPadding` value to stamp on a new or updated rectangle
+ * text container. Returns undefined for ellipse/diamond/arrow (they use dynamic
+ * dimension-based geometry that stays in getContainerBoundTextPadding fallback).
+ */
+export const computeContainerPadding = (
+  container: ExcalidrawElement,
+): { x: number; y: number } | undefined => {
+  if (container.type !== "rectangle") {
+    return undefined; // ellipse/diamond use geometry formulas, not this property
+  }
+  if (container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS) {
+    const radius = getCornerRadius(
+      Math.min(container.width, container.height),
+      container,
+    );
+    const pad = Math.max(BOUND_TEXT_PADDING_RECTANGLE, radius / 2);
+    return { x: pad, y: pad };
+  }
+  return { x: BOUND_TEXT_PADDING_RECTANGLE, y: BOUND_TEXT_PADDING_RECTANGLE };
+};
+
+/**
  * Returns the per-side padding between a container's edge and its bound text.
  * Uses the explicit `containerPadding` property when present, otherwise
  * computes padding from the container shape and roundness.
@@ -380,16 +403,6 @@ export const getContainerBoundTextPadding = (
   if (container.type === "diamond") {
     // https://github.com/excalidraw/excalidraw/pull/6265
     return BOUND_TEXT_PADDING + dim / 4;
-  }
-  if (
-    container.type === "rectangle" &&
-    container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS
-  ) {
-    const radius = getCornerRadius(
-      Math.min(container.width, container.height),
-      container,
-    );
-    return Math.max(BOUND_TEXT_PADDING, radius / 2);
   }
   return BOUND_TEXT_PADDING;
 };
