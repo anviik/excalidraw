@@ -15,7 +15,6 @@ import {
 
 import {
   computeBoundTextPosition,
-  computeContainerDimensionForBoundText,
   computeContainerPadding,
   getBoundTextElement,
   redrawTextBoundingBox,
@@ -275,14 +274,8 @@ export const actionWrapTextInContainer = register({
           containerPadding,
           x: textElement.x - paddingX,
           y: textElement.y - paddingY,
-          width: computeContainerDimensionForBoundText(
-            textElement.width,
-            "rectangle",
-          ),
-          height: computeContainerDimensionForBoundText(
-            textElement.height,
-            "rectangle",
-          ),
+          width: Math.ceil(textElement.width) + paddingX * 2,
+          height: Math.ceil(textElement.height) + paddingY * 2,
           groupIds: textElement.groupIds,
           frameId: textElement.frameId,
         });

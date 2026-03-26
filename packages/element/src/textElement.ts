@@ -113,6 +113,7 @@ export const redrawTextBoundingBox = (
         metrics.height,
         container.type,
         container,
+        "y",
       );
       scene.mutateElement(container, { height: nextHeight });
       updateOriginalContainerCache(container.id, nextHeight);
@@ -123,6 +124,7 @@ export const redrawTextBoundingBox = (
         metrics.width,
         container.type,
         container,
+        "x",
       );
       scene.mutateElement(container, { width: nextWidth });
     }
@@ -194,6 +196,7 @@ export const handleBindTextResize = (
         nextHeight,
         container.type,
         container,
+        "y",
       );
 
       const diff = containerHeight - container.height;
@@ -385,12 +388,24 @@ export const computeContainerPadding = (
  * Returns the per-side padding between a container's edge and its bound text.
  * Uses the explicit `containerPadding` property when present, otherwise
  * computes padding from the container shape and roundness.
+ *
+ * For ADAPTIVE_RADIUS rectangles the corner radius changes with the container
+ * dimensions, so we always recompute rather than returning the (potentially
+ * stale) stored value.
  */
 export const getContainerBoundTextPadding = (
   container: ExcalidrawElement,
   axis: "x" | "y" = "x",
 ) => {
   if (container.containerPadding) {
+    // ADAPTIVE_RADIUS: corner radius (and therefore padding) changes whenever
+    // the container is resized — recompute from current dimensions.
+    if (container.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS) {
+      const computed = computeContainerPadding(container);
+      if (computed) {
+        return computed[axis];
+      }
+    }
     return container.containerPadding[axis];
   }
 
@@ -492,6 +507,7 @@ export const computeContainerDimensionForBoundText = (
   dimension: number,
   containerType: ExtractSetType<typeof VALID_CONTAINER_TYPES>,
   container?: ExcalidrawElement,
+  axis: "x" | "y" = "x",
 ) => {
   dimension = Math.ceil(dimension);
 
@@ -510,7 +526,7 @@ export const computeContainerDimensionForBoundText = (
 
   // rectangle — use adaptive-radius-aware padding when container is available
   const padding = container
-    ? getContainerBoundTextPadding(container) * 2
+    ? getContainerBoundTextPadding(container, axis) * 2
     : BOUND_TEXT_PADDING * 2;
   return dimension + padding;
 };

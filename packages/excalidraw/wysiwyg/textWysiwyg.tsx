@@ -215,6 +215,7 @@ export const textWysiwyg = ({
             height,
             container.type,
             container,
+            "y",
           );
 
           app.scene.mutateElement(container, { height: targetContainerHeight });
@@ -231,6 +232,7 @@ export const textWysiwyg = ({
             height,
             container.type,
             container,
+            "y",
           );
           app.scene.mutateElement(container, { height: targetContainerHeight });
           updateBoundElements(container, app.scene);
