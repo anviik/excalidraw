@@ -1,5 +1,6 @@
 import {
   BOUND_TEXT_PADDING,
+  CONTAINER_PADDING,
   ROUNDNESS,
   TEXT_ALIGN,
   VERTICAL_ALIGN,
@@ -261,18 +262,24 @@ export const actionWrapTextInContainer = register({
               : null,
           opacity: 100,
           locked: false,
-          x: textElement.x - BOUND_TEXT_PADDING,
-          y: textElement.y - BOUND_TEXT_PADDING,
+          x: textElement.x - CONTAINER_PADDING,
+          y: textElement.y - CONTAINER_PADDING,
           width: computeContainerDimensionForBoundText(
             textElement.width,
             "rectangle",
+            CONTAINER_PADDING,
           ),
           height: computeContainerDimensionForBoundText(
             textElement.height,
             "rectangle",
+            CONTAINER_PADDING,
           ),
           groupIds: textElement.groupIds,
           frameId: textElement.frameId,
+        });
+
+        app.scene.mutateElement(container as ExcalidrawTextContainer, {
+          containerPadding: [CONTAINER_PADDING, CONTAINER_PADDING],
         });
 
         // update bindings

@@ -267,11 +267,12 @@ export type ExcalidrawBindableElement =
   | ExcalidrawFrameElement
   | ExcalidrawMagicFrameElement;
 
-export type ExcalidrawTextContainer =
+export type ExcalidrawTextContainer = (
   | ExcalidrawRectangleElement
   | ExcalidrawDiamondElement
   | ExcalidrawEllipseElement
-  | ExcalidrawArrowElement;
+  | ExcalidrawArrowElement
+) & { containerPadding?: [x: number, y: number] };
 
 export type ExcalidrawTextElementWithContainer = {
   containerId: ExcalidrawTextContainer["id"];

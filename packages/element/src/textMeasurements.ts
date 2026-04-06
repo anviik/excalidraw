@@ -1,5 +1,6 @@
 import {
   BOUND_TEXT_PADDING,
+  CONTAINER_PADDING,
   DEFAULT_FONT_SIZE,
   DEFAULT_FONT_FAMILY,
   getFontString,
@@ -37,17 +38,17 @@ export const getApproxMinLineWidth = (
   if (maxCharWidth === 0) {
     return (
       measureText(DUMMY_TEXT.split("").join("\n"), font, lineHeight).width +
-      BOUND_TEXT_PADDING * 2
+      CONTAINER_PADDING * 2
     );
   }
-  return maxCharWidth + BOUND_TEXT_PADDING * 2;
+  return maxCharWidth + CONTAINER_PADDING * 2;
 };
 
 export const getMinTextElementWidth = (
   font: FontString,
   lineHeight: ExcalidrawTextElement["lineHeight"],
 ) => {
-  return measureText("", font, lineHeight).width + BOUND_TEXT_PADDING * 2;
+  return measureText("", font, lineHeight).width + CONTAINER_PADDING * 2;
 };
 
 export const isMeasureTextSupported = () => {
@@ -100,7 +101,7 @@ export const getApproxMinLineHeight = (
   fontSize: ExcalidrawTextElement["fontSize"],
   lineHeight: ExcalidrawTextElement["lineHeight"],
 ) => {
-  return getLineHeightInPx(fontSize, lineHeight) + BOUND_TEXT_PADDING * 2;
+  return getLineHeightInPx(fontSize, lineHeight) + CONTAINER_PADDING * 2;
 };
 
 let textMetricsProvider: TextMetricsProvider | undefined;

@@ -13,6 +13,7 @@ import {
 } from "@excalidraw/common";
 
 import {
+  computeContainerPadding,
   getTextFromElements,
   originalContainerCache,
   updateBoundElements,
@@ -46,6 +47,7 @@ import type {
   ExcalidrawLinearElement,
   ExcalidrawTextElementWithContainer,
   ExcalidrawTextElement,
+  ExcalidrawTextContainer,
 } from "@excalidraw/element/types";
 
 import { actionSaveToActiveFile } from "../actions";
@@ -207,12 +209,16 @@ export const textWysiwyg = ({
           container,
           updatedTextElement as ExcalidrawTextElementWithContainer,
         );
+        const [padX, padY] = computeContainerPadding(
+          container as ExcalidrawTextContainer,
+        );
 
         // autogrow container height if text exceeds
         if (!isArrowElement(container) && height > maxHeight) {
           const targetContainerHeight = computeContainerDimensionForBoundText(
             height,
             container.type,
+            padY,
           );
 
           app.scene.mutateElement(container, { height: targetContainerHeight });
@@ -228,6 +234,7 @@ export const textWysiwyg = ({
           const targetContainerHeight = computeContainerDimensionForBoundText(
             height,
             container.type,
+            padY,
           );
           app.scene.mutateElement(container, { height: targetContainerHeight });
           updateBoundElements(container, app.scene);
