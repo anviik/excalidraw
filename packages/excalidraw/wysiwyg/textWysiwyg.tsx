@@ -22,6 +22,7 @@ import {
 import { LinearElementEditor } from "@excalidraw/element";
 import { bumpVersion } from "@excalidraw/element";
 import {
+  getContainerPadding,
   getBoundTextElementId,
   getContainerElement,
   getTextElementAngle,
@@ -46,6 +47,7 @@ import type {
   ExcalidrawLinearElement,
   ExcalidrawTextElementWithContainer,
   ExcalidrawTextElement,
+  ExcalidrawTextContainer,
 } from "@excalidraw/element/types";
 
 import { actionSaveToActiveFile } from "../actions";
@@ -207,12 +209,15 @@ export const textWysiwyg = ({
           container,
           updatedTextElement as ExcalidrawTextElementWithContainer,
         );
-
+        const [, offsetY] = getContainerPadding(
+          container as ExcalidrawTextContainer,
+        );
         // autogrow container height if text exceeds
         if (!isArrowElement(container) && height > maxHeight) {
           const targetContainerHeight = computeContainerDimensionForBoundText(
             height,
             container.type,
+            offsetY,
           );
 
           app.scene.mutateElement(container, { height: targetContainerHeight });
@@ -228,6 +233,7 @@ export const textWysiwyg = ({
           const targetContainerHeight = computeContainerDimensionForBoundText(
             height,
             container.type,
+            offsetY,
           );
           app.scene.mutateElement(container, { height: targetContainerHeight });
           updateBoundElements(container, app.scene);
@@ -609,7 +615,6 @@ export const textWysiwyg = ({
       updateElement,
       app.scene.getNonDeletedElementsMap(),
     );
-
     if (container) {
       if (editable.value.trim()) {
         const boundTextElementId = getBoundTextElementId(container);

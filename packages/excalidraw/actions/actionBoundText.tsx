@@ -1,5 +1,6 @@
 import {
-  BOUND_TEXT_PADDING,
+  CONTAINER_PADDING_X,
+  CONTAINER_PADDING_Y,
   ROUNDNESS,
   TEXT_ALIGN,
   VERTICAL_ALIGN,
@@ -165,6 +166,7 @@ export const actionBindText = register({
         type: "text",
         id: textElement.id,
       }),
+      containerPadding: [CONTAINER_PADDING_X, CONTAINER_PADDING_Y],
     });
     const originalContainerHeight = container.height;
     redrawTextBoundingBox(textElement, container, app.scene);
@@ -261,16 +263,19 @@ export const actionWrapTextInContainer = register({
               : null,
           opacity: 100,
           locked: false,
-          x: textElement.x - BOUND_TEXT_PADDING,
-          y: textElement.y - BOUND_TEXT_PADDING,
+          x: textElement.x - CONTAINER_PADDING_X,
+          y: textElement.y - CONTAINER_PADDING_Y,
           width: computeContainerDimensionForBoundText(
             textElement.width,
             "rectangle",
+            CONTAINER_PADDING_X,
           ),
           height: computeContainerDimensionForBoundText(
             textElement.height,
             "rectangle",
+            CONTAINER_PADDING_Y,
           ),
+          containerPadding: [CONTAINER_PADDING_X, CONTAINER_PADDING_Y],
           groupIds: textElement.groupIds,
           frameId: textElement.frameId,
         });

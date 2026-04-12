@@ -1,7 +1,13 @@
 import { getLineHeight } from "@excalidraw/common";
 import { API } from "@excalidraw/excalidraw/tests/helpers/api";
 
-import { FONT_FAMILY, TEXT_ALIGN, VERTICAL_ALIGN } from "@excalidraw/common";
+import {
+  FONT_FAMILY,
+  TEXT_ALIGN,
+  VERTICAL_ALIGN,
+  CONTAINER_PADDING_X,
+  CONTAINER_PADDING_Y,
+} from "@excalidraw/common";
 
 import {
   computeContainerDimensionForBoundText,
@@ -56,6 +62,7 @@ describe("Test measureText", () => {
     const params = {
       width: 178,
       height: 194,
+      containerPadding: [CONTAINER_PADDING_X, CONTAINER_PADDING_Y],
     };
 
     it("should compute container height correctly for rectangle", () => {
@@ -63,9 +70,13 @@ describe("Test measureText", () => {
         type: "rectangle",
         ...params,
       });
-      expect(computeContainerDimensionForBoundText(150, element.type)).toEqual(
-        160,
-      );
+      expect(
+        computeContainerDimensionForBoundText(
+          150,
+          element.type,
+          params.containerPadding[1],
+        ),
+      ).toEqual(160);
     });
 
     it("should compute container height correctly for ellipse", () => {
@@ -73,9 +84,13 @@ describe("Test measureText", () => {
         type: "ellipse",
         ...params,
       });
-      expect(computeContainerDimensionForBoundText(150, element.type)).toEqual(
-        226,
-      );
+      expect(
+        computeContainerDimensionForBoundText(
+          150,
+          element.type,
+          params.containerPadding[1],
+        ),
+      ).toEqual(226);
     });
 
     it("should compute container height correctly for diamond", () => {
@@ -83,9 +98,13 @@ describe("Test measureText", () => {
         type: "diamond",
         ...params,
       });
-      expect(computeContainerDimensionForBoundText(150, element.type)).toEqual(
-        320,
-      );
+      expect(
+        computeContainerDimensionForBoundText(
+          150,
+          element.type,
+          params.containerPadding[1],
+        ),
+      ).toEqual(320);
     });
   });
 

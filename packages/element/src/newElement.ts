@@ -74,6 +74,9 @@ export type ElementConstructorOpts = MarkOptional<
   | "opacity"
   | "customData"
 >;
+type TextContainerConstructorOpts = {
+  containerPadding?: [x: number, y: number];
+};
 
 const _newElementBase = <T extends ExcalidrawElement>(
   type: T["type"],
@@ -97,8 +100,11 @@ const _newElementBase = <T extends ExcalidrawElement>(
     boundElements = null,
     link = null,
     locked = DEFAULT_ELEMENT_PROPS.locked,
+    containerPadding,
     ...rest
-  }: ElementConstructorOpts & Omit<Partial<ExcalidrawGenericElement>, "type">,
+  }: ElementConstructorOpts &
+    TextContainerConstructorOpts &
+    Omit<Partial<ExcalidrawGenericElement>, "type">,
 ) => {
   // NOTE (mtolmacs): This is a temporary check to detect extremely large
   // element position or sizing
@@ -151,6 +157,7 @@ const _newElementBase = <T extends ExcalidrawElement>(
     link,
     locked,
     customData: rest.customData,
+    ...(containerPadding ? { containerPadding } : {}),
   };
   return element;
 };
@@ -158,7 +165,8 @@ const _newElementBase = <T extends ExcalidrawElement>(
 export const newElement = (
   opts: {
     type: ExcalidrawGenericElement["type"];
-  } & ElementConstructorOpts,
+  } & ElementConstructorOpts &
+    TextContainerConstructorOpts,
 ): NonDeleted<ExcalidrawGenericElement> =>
   _newElementBase<ExcalidrawGenericElement>(opts.type, opts);
 

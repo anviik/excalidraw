@@ -257,6 +257,7 @@ import {
   handleFocusPointPointerUp,
   maybeHandleArrowPointlikeDrag,
   getUncroppedWidthAndHeight,
+  getContainerPadding,
 } from "@excalidraw/element";
 
 import type { GlobalPoint, LocalPoint, Radians } from "@excalidraw/math";
@@ -6041,9 +6042,11 @@ class App extends React.Component<AppProps, AppState> {
       const minHeight = getApproxMinLineHeight(fontSize, lineHeight);
       const newHeight = Math.max(container.height, minHeight);
       const newWidth = Math.max(container.width, minWidth);
+      const containerPadding = getContainerPadding(container);
       this.scene.mutateElement(container, {
         height: newHeight,
         width: newWidth,
+        containerPadding,
       });
       sceneX = container.x + newWidth / 2;
       sceneY = container.y + newHeight / 2;
@@ -6093,6 +6096,19 @@ class App extends React.Component<AppProps, AppState> {
           : (0 as Radians),
         frameId: topLayerFrame ? topLayerFrame.id : null,
       });
+
+    // if existingTextElement
+    if (
+      existingTextElement &&
+      container &&
+      isValidTextContainer(container) &&
+      !isArrowElement(container)
+    ) {
+      const containerPadding = getContainerPadding(container);
+      this.scene.mutateElement(container, {
+        containerPadding,
+      });
+    }
 
     if (!existingTextElement && shouldBindToContainer && container) {
       this.scene.mutateElement(container, {
@@ -8429,7 +8445,7 @@ class App extends React.Component<AppProps, AppState> {
                     };
                   }
                 }
-
+                // console.log(hitElement);
                 return {
                   ...selectGroupsForSelectedElements(
                     {
