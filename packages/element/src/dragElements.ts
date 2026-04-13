@@ -4,6 +4,7 @@ import {
   getGridPoint,
   getFontString,
   DRAGGING_THRESHOLD,
+  BOUND_TEXT_PADDING,
 } from "@excalidraw/common";
 
 import type {
@@ -313,6 +314,7 @@ export const dragNewElement = ({
         fontFamily: newElement.fontFamily,
       }),
       newElement.lineHeight,
+      BOUND_TEXT_PADDING,
     );
     width = Math.max(width, minWidth);
 

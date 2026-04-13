@@ -11,6 +11,7 @@ import {
   getFontString,
   getLineHeight,
   ROUGHNESS,
+  CONTAINER_PADDING_X,
 } from "@excalidraw/common";
 
 import {
@@ -294,7 +295,11 @@ export const createRadarAxisLabels = (
     RADAR_AXIS_LABEL_MAX_WIDTH,
     radius * (labels.length > 8 ? 0.56 : 0.72),
   );
-  const minLabelWidth = getApproxMinLineWidth(fontString, lineHeight);
+  const minLabelWidth = getApproxMinLineWidth(
+    fontString,
+    lineHeight,
+    CONTAINER_PADDING_X,
+  );
 
   const axisLabels = labels.map((label, index) => {
     const angle = angles[index];
@@ -511,7 +516,8 @@ const wrapOrEllipsifyTextToWidth = (
     });
     if (
       !hasLongWord &&
-      maxWidth >= getApproxMinLineWidth(fontString, lineHeight)
+      maxWidth >=
+        getApproxMinLineWidth(fontString, lineHeight, CONTAINER_PADDING_X)
     ) {
       return { wrapped: true, text: wrapText(text, fontString, maxWidth) };
     }
@@ -556,7 +562,9 @@ const getCartesianAxisLabelSpec = (
 ): CartesianAxisLabelSpec => {
   const minWidth = Math.max(
     CARTESIAN_LABEL_MIN_WIDTH,
-    Math.ceil(getApproxMinLineWidth(fontString, lineHeight)),
+    Math.ceil(
+      getApproxMinLineWidth(fontString, lineHeight, CONTAINER_PADDING_X),
+    ),
   );
   const maxWidth = Math.max(minWidth, Math.floor(maxLabelWidth));
   const candidateWidths: number[] = [];

@@ -582,7 +582,7 @@ export const getContainerPadding = (
   container: ExcalidrawTextContainer,
   isFallbackPadding: boolean = false,
 ): [x: number, y: number] => {
-  if (container.containerPadding) {
+  if (container.containerPadding && !isFallbackPadding) {
     return container.containerPadding;
   } else if (isFallbackPadding) {
     return [BOUND_TEXT_PADDING, BOUND_TEXT_PADDING];

@@ -33,22 +33,24 @@ const DUMMY_TEXT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLocaleUpperCase();
 export const getApproxMinLineWidth = (
   font: FontString,
   lineHeight: ExcalidrawTextElement["lineHeight"],
+  offset: number,
 ) => {
   const maxCharWidth = getMaxCharWidth(font);
   if (maxCharWidth === 0) {
     return (
       measureText(DUMMY_TEXT.split("").join("\n"), font, lineHeight).width +
-      CONTAINER_PADDING_X * 2
+      offset * 2
     );
   }
-  return maxCharWidth + CONTAINER_PADDING_X * 2;
+  return maxCharWidth + offset * 2;
 };
 
 export const getMinTextElementWidth = (
   font: FontString,
   lineHeight: ExcalidrawTextElement["lineHeight"],
+  offset: number,
 ) => {
-  return measureText("", font, lineHeight).width + CONTAINER_PADDING_X * 2;
+  return measureText("", font, lineHeight).width + offset * 2;
 };
 
 export const isMeasureTextSupported = () => {
@@ -100,8 +102,9 @@ export const getLineHeightInPx = (
 export const getApproxMinLineHeight = (
   fontSize: ExcalidrawTextElement["fontSize"],
   lineHeight: ExcalidrawTextElement["lineHeight"],
+  offset: number,
 ) => {
-  return getLineHeightInPx(fontSize, lineHeight) + CONTAINER_PADDING_Y * 2;
+  return getLineHeightInPx(fontSize, lineHeight) + offset * 2;
 };
 
 let textMetricsProvider: TextMetricsProvider | undefined;

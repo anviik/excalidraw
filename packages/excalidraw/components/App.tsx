@@ -110,6 +110,7 @@ import {
   setDesktopUIMode,
   isSelectionLikeTool,
   oneOf,
+  BOUND_TEXT_PADDING,
 } from "@excalidraw/common";
 
 import {
@@ -6035,14 +6036,19 @@ class App extends React.Component<AppProps, AppState> {
         fontSize,
         fontFamily,
       };
+      const containerPadding = getContainerPadding(container);
       const minWidth = getApproxMinLineWidth(
         getFontString(fontString),
         lineHeight,
+        containerPadding[0],
       );
-      const minHeight = getApproxMinLineHeight(fontSize, lineHeight);
+      const minHeight = getApproxMinLineHeight(
+        fontSize,
+        lineHeight,
+        containerPadding[1],
+      );
       const newHeight = Math.max(container.height, minHeight);
       const newWidth = Math.max(container.width, minWidth);
-      const containerPadding = getContainerPadding(container);
       this.scene.mutateElement(container, {
         height: newHeight,
         width: newWidth,
@@ -10498,6 +10504,7 @@ class App extends React.Component<AppProps, AppState> {
             fontFamily: newElement.fontFamily,
           }),
           newElement.lineHeight,
+          BOUND_TEXT_PADDING,
         );
 
         if (newElement.width < minWidth) {

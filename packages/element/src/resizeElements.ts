@@ -12,6 +12,7 @@ import {
   SHIFT_LOCKING_ANGLE,
   rescalePoints,
   getFontString,
+  BOUND_TEXT_PADDING,
 } from "@excalidraw/common";
 
 import type { GlobalPoint } from "@excalidraw/math";
@@ -40,6 +41,7 @@ import {
   handleBindTextResize,
   getBoundTextMaxWidth,
   computeBoundTextPosition,
+  getContainerPadding,
 } from "./textElement";
 import {
   getMinTextElementWidth,
@@ -76,6 +78,7 @@ import type {
   NonDeleted,
   ExcalidrawElement,
   ExcalidrawTextElementWithContainer,
+  ExcalidrawTextContainer,
   ExcalidrawImageElement,
   ElementsMap,
   ExcalidrawElbowArrowElement,
@@ -351,12 +354,24 @@ export const resizeSingleTextElement = (
   }
 
   if (transformHandleType === "e" || transformHandleType === "w") {
+    const isBound = isBoundToContainer(element);
+    let offset: number;
+    if (isBound) {
+      const container = scene.getNonDeletedElement(element.containerId);
+      const [offsetX] = getContainerPadding(
+        container as ExcalidrawTextContainer,
+      );
+      offset = offsetX;
+    } else {
+      offset = BOUND_TEXT_PADDING;
+    }
     const minWidth = getMinTextElementWidth(
       getFontString({
         fontSize: element.fontSize,
         fontFamily: element.fontFamily,
       }),
       element.lineHeight,
+      offset,
     );
 
     const newWidth = Math.max(minWidth, nextWidth);
@@ -781,13 +796,18 @@ export const resizeSingleElement = (
         fontSize: nextFont.size,
       };
     } else {
+      const [offsetX, offsetY] = getContainerPadding(
+        latestElement as ExcalidrawTextContainer,
+      );
       const minWidth = getApproxMinLineWidth(
         getFontString(boundTextElement),
         boundTextElement.lineHeight,
+        offsetX,
       );
       const minHeight = getApproxMinLineHeight(
         boundTextElement.fontSize,
         boundTextElement.lineHeight,
+        offsetY,
       );
       nextWidth = Math.max(nextWidth, minWidth);
       nextHeight = Math.max(nextHeight, minHeight);
