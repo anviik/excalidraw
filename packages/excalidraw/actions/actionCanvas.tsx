@@ -529,7 +529,8 @@ export const actionToggleEraserTool = register({
     event.key === KEYS.E &&
     !appState.newElement &&
     !appState.selectedLinearElement?.isEditing &&
-    !appState.selectedLinearElement?.isDragging,
+    !appState.selectedLinearElement?.isDragging &&
+    !appState.selectedLinearElement?.elbowed,
 });
 
 export const actionToggleLassoTool = register({
