@@ -1113,6 +1113,23 @@ describe("regression tests", () => {
     });
     assertSelectedElements(rect3);
   });
+
+  it("when multi-point line is being created, toggling between eraser tool should be disabled", () => {
+    UI.clickTool("line");
+    mouse.down(10, 10);
+    mouse.up(10, 10);
+
+    expect(h.state.activeTool.type).toBe("line");
+    Keyboard.keyPress(KEYS.E); // Eraser tool hotkey
+    expect(h.state.activeTool.type).toBe("line");
+
+    mouse.down(20, 20);
+    mouse.up(20, 20);
+
+    Keyboard.keyPress(KEYS.ENTER);
+    Keyboard.keyPress(KEYS.E);
+    expect(h.state.activeTool.type).toBe("eraser");
+  });
 });
 
 it(

@@ -14902,6 +14902,307 @@ exports[`regression tests > updates fontSize & fontFamily appState > [end of tes
 
 exports[`regression tests > updates fontSize & fontFamily appState > [end of test] undo stack 1`] = `[]`;
 
+exports[`regression tests > when multi-point line is being created, toggling between eraser tool should be disabled > [end of test] appState 1`] = `
+{
+  "activeEmbeddable": null,
+  "activeLockedId": null,
+  "activeTool": {
+    "customType": null,
+    "fromSelection": false,
+    "lastActiveTool": {
+      "customType": null,
+      "fromSelection": false,
+      "lastActiveTool": null,
+      "locked": false,
+      "type": "selection",
+    },
+    "locked": false,
+    "type": "eraser",
+  },
+  "bindMode": "orbit",
+  "bindingPreference": "enabled",
+  "collaborators": Map {},
+  "contextMenu": null,
+  "croppingElementId": null,
+  "currentHoveredFontFamily": null,
+  "currentItemArrowType": "round",
+  "currentItemBackgroundColor": "transparent",
+  "currentItemEndArrowhead": "arrow",
+  "currentItemFillStyle": "solid",
+  "currentItemFontFamily": 5,
+  "currentItemFontSize": 20,
+  "currentItemOpacity": 100,
+  "currentItemRoughness": 1,
+  "currentItemRoundness": "sharp",
+  "currentItemStartArrowhead": null,
+  "currentItemStrokeColor": "#1e1e1e",
+  "currentItemStrokeStyle": "solid",
+  "currentItemStrokeWidth": 2,
+  "currentItemTextAlign": "left",
+  "cursorButton": "up",
+  "defaultSidebarDockedPreference": false,
+  "editingFrame": null,
+  "editingGroupId": null,
+  "editingTextElement": null,
+  "elementsToHighlight": null,
+  "errorMessage": null,
+  "exportBackground": true,
+  "exportEmbedScene": false,
+  "exportScale": 1,
+  "exportWithDarkMode": false,
+  "fileHandle": null,
+  "followedBy": Set {},
+  "frameRendering": {
+    "clip": true,
+    "enabled": true,
+    "name": true,
+    "outline": true,
+  },
+  "frameToHighlight": null,
+  "gridModeEnabled": false,
+  "gridSize": 20,
+  "gridStep": 5,
+  "height": 768,
+  "hoveredElementIds": {},
+  "isBindingEnabled": true,
+  "isCropping": false,
+  "isLoading": false,
+  "isMidpointSnappingEnabled": true,
+  "isResizing": false,
+  "isRotating": false,
+  "lastPointerDownWith": "mouse",
+  "lockedMultiSelections": {},
+  "multiElement": null,
+  "name": "Untitled-201933152653",
+  "newElement": null,
+  "objectsSnapModeEnabled": false,
+  "offsetLeft": 0,
+  "offsetTop": 0,
+  "openDialog": null,
+  "openMenu": null,
+  "openPopup": null,
+  "openSidebar": null,
+  "originSnapOffset": null,
+  "penDetected": false,
+  "penMode": false,
+  "preferredSelectionTool": {
+    "initialized": true,
+    "type": "selection",
+  },
+  "previousSelectedElementIds": {},
+  "resizingElement": null,
+  "scrollX": 0,
+  "scrollY": 0,
+  "scrolledOutside": false,
+  "searchMatches": null,
+  "selectedElementIds": {},
+  "selectedElementsAreBeingDragged": false,
+  "selectedGroupIds": {},
+  "selectedLinearElement": {
+    "customLineAngle": null,
+    "draggedFocusPointBinding": null,
+    "elbowed": false,
+    "elementId": "id0",
+    "hoverPointIndex": -1,
+    "hoveredFocusPointBinding": null,
+    "initialState": {
+      "altFocusPoint": null,
+      "arrowStartIsInside": false,
+      "lastClickedPoint": -1,
+      "origin": null,
+      "prevSelectedPointsIndices": null,
+      "segmentMidpoint": {
+        "added": false,
+        "index": null,
+        "value": null,
+      },
+    },
+    "isDragging": false,
+    "isEditing": false,
+    "lastCommittedPoint": null,
+    "lastUncommittedPoint": null,
+    "pointerDownState": undefined,
+    "pointerOffset": {
+      "x": 0,
+      "y": 0,
+    },
+    "segmentMidPointHoveredCoords": null,
+    "selectedPointsIndices": null,
+  },
+  "selectionElement": null,
+  "shouldCacheIgnoreZoom": false,
+  "showHyperlinkPopup": false,
+  "showWelcomeScreen": true,
+  "snapLines": [],
+  "startBoundElement": null,
+  "stats": {
+    "open": false,
+    "panels": 3,
+  },
+  "suggestedBinding": null,
+  "theme": "light",
+  "toast": null,
+  "userToFollow": null,
+  "viewBackgroundColor": "#ffffff",
+  "viewModeEnabled": false,
+  "width": 1440,
+  "zenModeEnabled": false,
+  "zoom": {
+    "value": 1,
+  },
+}
+`;
+
+exports[`regression tests > when multi-point line is being created, toggling between eraser tool should be disabled > [end of test] number of elements 1`] = `0`;
+
+exports[`regression tests > when multi-point line is being created, toggling between eraser tool should be disabled > [end of test] number of renders 1`] = `11`;
+
+exports[`regression tests > when multi-point line is being created, toggling between eraser tool should be disabled > [end of test] redo stack 1`] = `[]`;
+
+exports[`regression tests > when multi-point line is being created, toggling between eraser tool should be disabled > [end of test] undo stack 1`] = `
+[
+  {
+    "appState": AppStateDelta {
+      "delta": Delta {
+        "deleted": {
+          "selectedElementIds": {
+            "id0": true,
+          },
+          "selectedLinearElement": {
+            "elementId": "id0",
+            "isEditing": false,
+          },
+        },
+        "inserted": {
+          "selectedElementIds": {},
+          "selectedLinearElement": null,
+        },
+      },
+    },
+    "elements": {
+      "added": {},
+      "removed": {
+        "id0": {
+          "deleted": {
+            "angle": 0,
+            "backgroundColor": "transparent",
+            "boundElements": null,
+            "customData": undefined,
+            "endArrowhead": null,
+            "endBinding": null,
+            "fillStyle": "solid",
+            "frameId": null,
+            "groupIds": [],
+            "height": 10,
+            "index": "a0",
+            "isDeleted": false,
+            "link": null,
+            "locked": false,
+            "opacity": 100,
+            "points": [
+              [
+                0,
+                0,
+              ],
+              [
+                10,
+                10,
+              ],
+            ],
+            "polygon": false,
+            "roughness": 1,
+            "roundness": null,
+            "startArrowhead": null,
+            "startBinding": null,
+            "strokeColor": "#1e1e1e",
+            "strokeStyle": "solid",
+            "strokeWidth": 2,
+            "type": "line",
+            "version": 4,
+            "width": 10,
+            "x": 10,
+            "y": 10,
+          },
+          "inserted": {
+            "isDeleted": true,
+            "version": 3,
+          },
+        },
+      },
+      "updated": {},
+    },
+    "id": "id2",
+  },
+  {
+    "appState": AppStateDelta {
+      "delta": Delta {
+        "deleted": {},
+        "inserted": {},
+      },
+    },
+    "elements": {
+      "added": {},
+      "removed": {},
+      "updated": {
+        "id0": {
+          "deleted": {
+            "height": 50,
+            "points": [
+              [
+                0,
+                0,
+              ],
+              [
+                50,
+                50,
+              ],
+            ],
+            "version": 6,
+            "width": 50,
+          },
+          "inserted": {
+            "height": 10,
+            "points": [
+              [
+                0,
+                0,
+              ],
+              [
+                10,
+                10,
+              ],
+            ],
+            "version": 4,
+            "width": 10,
+          },
+        },
+      },
+    },
+    "id": "id4",
+  },
+  {
+    "appState": AppStateDelta {
+      "delta": Delta {
+        "deleted": {
+          "selectedElementIds": {},
+        },
+        "inserted": {
+          "selectedElementIds": {
+            "id0": true,
+          },
+        },
+      },
+    },
+    "elements": {
+      "added": {},
+      "removed": {},
+      "updated": {},
+    },
+    "id": "id6",
+  },
+]
+`;
+
 exports[`regression tests > zoom hotkeys > [end of test] appState 1`] = `
 {
   "activeEmbeddable": null,
